@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1120">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>DBFFL Draft Order Pick Em — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="wrap gate" id="gate">
+  <div class="panel">
+    <h3>Commissioner access</h3>
+    <p>Enter the admin passphrase to set lines, post finals, and manage entries.</p>
+    <div class="field">
+      <label for="pass">Passphrase</label>
+      <input id="pass" type="password" autocomplete="current-password">
+    </div>
+    <div class="submitbar">
+      <button class="btn" id="enterBtn" type="button">Unlock</button>
+      <span class="status" id="gateStatus"></span>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="app" hidden>
+  <section class="hero">
+    <h1>Commissioner <em>console</em>.</h1>
+    <p>Set the spread for each game as the lines firm up, drop in kickoff times and venues,
+       then post final scores to score the board automatically.</p>
+  </section>
+
+  <div id="banners"></div>
+
+  <div class="panel">
+    <h3>Board controls</h3>
+    <div class="grid2">
+      <div class="field">
+        <label for="lockMode">Pick lock</label>
+        <select id="lockMode">
+          <option value="auto">Auto — lock at first kickoff</option>
+          <option value="open">Force open — accept picks regardless</option>
+          <option value="closed">Force closed — lock now</option>
+        </select>
+        <span class="note" id="lockNote"></span>
+      </div>
+      <div class="field">
+        <label for="pushRule">Push handling</label>
+        <select id="pushRule">
+          <option value="credit">Push = everyone earns the weight</option>
+          <option value="none">Push = nobody earns the weight</option>
+        </select>
+        <span class="note">Applies when the final margin lands exactly on the number.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Lines, kickoffs &amp; venues</h3>
+    <p>Pick the favorite and enter the number as a positive value (a 13.5-point favorite is <code>13.5</code>).
+       Leave the favorite blank for a true pick&rsquo;em. Kickoff times use your local timezone.</p>
+    <div id="odds"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Final scores</h3>
+    <p>Enter finals as games end. Against-the-spread results and every player&rsquo;s score update the
+       moment you save. The Wisconsin&ndash;Notre Dame final also sets the tiebreaker total.</p>
+    <div id="finals"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Entries</h3>
+    <div id="entries"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Backup</h3>
+    <div class="toolbar">
+      <button class="btn ghost sm" id="exportBtn" type="button">Download all data as JSON</button>
+    </div>
+  </div>
+
+  <div class="savebar">
+    <button class="btn" id="saveBtn" type="button">Save settings</button>
+    <button class="btn ghost sm" id="revertBtn" type="button">Discard changes</button>
+    <span class="status" id="saveStatus"></span>
+  </div>
+</main>
+
+<script type="module" src="assets/js/admin.js"></script>
+</body>
+</html>

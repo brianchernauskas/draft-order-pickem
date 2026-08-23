@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1120">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>DBFFL Draft Order Pick Em — Make Your Picks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="wrap gate" id="gate" hidden>
+  <div class="panel">
+    <h3>League password</h3>
+    <p>The board is for DBFFL members. Enter the league password to make or edit your picks.</p>
+    <div class="field">
+      <label for="leaguePass">Password</label>
+      <input id="leaguePass" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false">
+    </div>
+    <div class="submitbar">
+      <button class="btn" id="gateBtn" type="button">Enter</button>
+      <span class="status" id="gateStatus"></span>
+    </div>
+    <p style="margin:14px 0 0"><a href="standings.html">Just here to watch the standings? →</a></p>
+  </div>
+</div>
+
+<main class="wrap" id="app" hidden>
+  <div id="honors"></div>
+
+  <section class="hero">
+    <h1>Pick the board.<br><em>Earn your slot.</em></h1>
+    <p>Ten games against the spread. Assign each one a confidence weight from 1 to 10 — every
+       number gets used exactly once. Your score is the sum of the weights you got right, and
+       that score sets the fantasy draft order. Wisconsin–Notre Dame total points breaks ties.</p>
+  </section>
+
+  <div id="banners"></div>
+  <div id="lockstrip"></div>
+
+  <div class="panel">
+    <div class="grid2">
+      <div class="field">
+        <label for="playerName">Your name</label>
+        <input id="playerName" type="text" autocomplete="name" placeholder="e.g. Brian C." maxlength="40">
+        <span class="note">Use the same name if you come back to edit before kickoff.</span>
+      </div>
+      <div class="field">
+        <label for="loadName">Already submitted?</label>
+        <button class="btn ghost" id="loadBtn" type="button">Load my picks to edit</button>
+        <span class="note">Pulls up your saved card so you can change it until the lock.</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="games"></div>
+  <div id="tracker"></div>
+
+  <div class="submitbar">
+    <button class="btn" id="submitBtn" type="button" disabled>Submit picks</button>
+    <span class="status" id="status">Enter your name to get started.</span>
+  </div>
+</main>
+
+<script type="module" src="assets/js/picks.js"></script>
+</body>
+</html>
