@@ -1,13 +1,13 @@
 // ---------------------------------------------------------------------------
 // Live standings / draft order.
 // ---------------------------------------------------------------------------
-import { TEAMS, TIEBREAKER_GAME_ID, MAX_SCORE, logoUrl } from './config.js?v=202608231311';
-import { initStore, watchEntries, watchSettings } from './store.js?v=202608231311';
+import { TEAMS, TIEBREAKER_GAME_ID, MAX_SCORE, logoUrl } from './config.js?v=202608231318';
+import { initStore, watchEntries, watchSettings } from './store.js?v=202608231318';
 import {
   mergedGames, spreadLabel, sideLine, gameResult, scoreEntries,
   tiebreakerActual, lockState, fmtTime, fmtDay,
-} from './scoring.js?v=202608231311';
-import { el, teamLogo, renderHeader, renderHonors, demoBanner, fmtStamp } from './ui.js?v=202608231311';
+} from './scoring.js?v=202608231318';
+import { el, teamLogo, renderHeader, renderHonors, demoBanner, fmtStamp } from './ui.js?v=202608231318';
 
 const state = { entries: [], settings: {}, expanded: new Set() };
 const $ = (id) => document.getElementById(id);

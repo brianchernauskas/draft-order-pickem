@@ -41,6 +41,25 @@ either password. They stop a forwarded link from being self-serve; they are not 
 player enters the league password it is remembered in their browser, so they only type it once
 per device.
 
+### Invite link
+
+Send this instead of the password and nobody has to type anything:
+
+```
+https://brianchernauskas.github.io/draft-order-pickem/index.html#key=degenerateffl
+```
+
+The admin page has this ready to copy under **Invite link**, so you never have to remember the
+format. It opens straight to the board, remembers the unlock on that device, and strips the key
+out of the address bar on arrival so it is not left on screen or in browser history.
+
+The key rides in the `#fragment` rather than a `?query` on purpose: fragments are never sent to
+the server, so the password stays out of GitHub's request logs and out of the `Referer` header on
+any outbound link. `?key=` is accepted too, in case a chat client mangles the fragment.
+
+A wrong key falls through to the normal password prompt. And be clear-eyed about what the link
+is: anyone it gets forwarded to is in, exactly as if you had texted them the password.
+
 ## Emailing picks (optional)
 
 Players can leave an email address on the pick form. The address is always saved with their entry

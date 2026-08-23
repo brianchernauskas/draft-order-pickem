@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------
 // Pick submission page.
 // ---------------------------------------------------------------------------
-import { TEAMS, GAMES, TIEBREAKER_GAME_ID, PICKS_PASSWORD } from './config.js?v=202608231311';
-import { initStore, loadSettings, getEntry, saveEntry, slugify, isDemo } from './store.js?v=202608231311';
-import { mergedGames, spreadLabel, sideLine, lockState, fmtDay, fmtTime } from './scoring.js?v=202608231311';
-import { el, teamLogo, renderHeader, renderHonors, demoBanner, countdown } from './ui.js?v=202608231311';
-import { emailConfigured, validEmail, picksSummary, sendPicksEmail, mailtoLink } from './mailer.js?v=202608231311';
+import { TEAMS, GAMES, TIEBREAKER_GAME_ID, PICKS_PASSWORD } from './config.js?v=202608231318';
+import { initStore, loadSettings, getEntry, saveEntry, slugify, isDemo } from './store.js?v=202608231318';
+import { mergedGames, spreadLabel, sideLine, lockState, fmtDay, fmtTime } from './scoring.js?v=202608231318';
+import { el, teamLogo, renderHeader, renderHonors, demoBanner, countdown } from './ui.js?v=202608231318';
+import { emailConfigured, validEmail, picksSummary, sendPicksEmail, mailtoLink } from './mailer.js?v=202608231318';
 
 const NAME_KEY = 'dop:lastName';
 const EMAIL_KEY = 'dop:lastEmail';
@@ -31,6 +31,29 @@ function unlocked() {
   return localStorage.getItem(UNLOCK_KEY) === PICKS_PASSWORD;
 }
 
+// An invite link carries the password so nobody has to type it:
+//   .../index.html#key=degenerateffl
+// The hash is used rather than a query string because fragments are never sent
+// to the server, so the password stays out of GitHub's request logs and out of
+// the Referer header on any outbound click. `?key=` is accepted too, in case a
+// chat app mangles the fragment.
+function keyFromUrl() {
+  const hash = new URLSearchParams(location.hash.replace(/^#/, '')).get('key');
+  const query = new URLSearchParams(location.search).get('key');
+  return hash || query;
+}
+
+// Take the key back out of the address bar once it has been applied, so it is
+// not sitting on screen or left behind in history.
+function scrubKeyFromUrl() {
+  const url = new URL(location.href);
+  url.searchParams.delete('key');
+  const hash = new URLSearchParams(url.hash.replace(/^#/, ''));
+  hash.delete('key');
+  const rest = hash.toString();
+  history.replaceState(null, '', url.pathname + url.search + (rest ? `#${rest}` : ''));
+}
+
 function showGate() {
   $('gate').hidden = false;
   const input = $('leaguePass');
@@ -52,6 +75,13 @@ function showGate() {
 async function boot() {
   await initStore();
   renderHeader('picks');
+
+  const invite = keyFromUrl();
+  if (invite) {
+    if (invite === PICKS_PASSWORD) localStorage.setItem(UNLOCK_KEY, PICKS_PASSWORD);
+    scrubKeyFromUrl();
+  }
+
   if (unlocked()) openBoard();
   else showGate();
 }

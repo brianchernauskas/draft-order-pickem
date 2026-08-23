@@ -1,10 +1,10 @@
 // ---------------------------------------------------------------------------
 // Commissioner console: lines, kickoffs, venues, finals, lock, entries.
 // ---------------------------------------------------------------------------
-import { TEAMS, GAMES, ADMIN_PASSPHRASE, TIEBREAKER_GAME_ID, logoUrl } from './config.js?v=202608231311';
-import { initStore, loadSettings, saveSettings, loadEntries, deleteEntry, isDemo } from './store.js?v=202608231311';
-import { mergedGames, gameResult, lockState, scoreEntries, formatLine, fmtTime } from './scoring.js?v=202608231311';
-import { el, renderHeader, demoBanner, fmtStamp } from './ui.js?v=202608231311';
+import { TEAMS, GAMES, ADMIN_PASSPHRASE, PICKS_PASSWORD, TIEBREAKER_GAME_ID, logoUrl } from './config.js?v=202608231318';
+import { initStore, loadSettings, saveSettings, loadEntries, deleteEntry, isDemo } from './store.js?v=202608231318';
+import { mergedGames, gameResult, lockState, scoreEntries, formatLine, fmtTime } from './scoring.js?v=202608231318';
+import { el, renderHeader, demoBanner, fmtStamp } from './ui.js?v=202608231318';
 
 const SESSION_KEY = 'dop:admin';
 const $ = (id) => document.getElementById(id);
@@ -46,6 +46,7 @@ async function start() {
   $('saveBtn').addEventListener('click', persist);
   $('revertBtn').addEventListener('click', async () => { await reload(); flash('Reverted to last saved settings.'); });
   $('exportBtn').addEventListener('click', exportJson);
+  setupShareLink();
   $('lockMode').addEventListener('change', () => { draft.lockOverride = $('lockMode').value; renderLockNote(); markDirty(); });
   $('pushRule').addEventListener('change', () => { draft.pushRule = $('pushRule').value; markDirty(); });
 }
@@ -281,6 +282,29 @@ async function persist() {
   } finally {
     $('saveBtn').disabled = false;
   }
+}
+
+// --- invite link -----------------------------------------------------------
+
+function setupShareLink() {
+  const url = new URL('index.html', location.href);
+  url.hash = `key=${encodeURIComponent(PICKS_PASSWORD)}`;
+  const field = $('shareUrl');
+  field.value = url.href;
+
+  field.addEventListener('focus', () => field.select());
+  $('copyShareBtn').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(field.value);
+      $('shareStatus').textContent = 'Copied.';
+    } catch {
+      // clipboard API needs a secure context and permission; selecting the text
+      // is the reliable fallback
+      field.select();
+      $('shareStatus').textContent = 'Press Ctrl+C to copy.';
+    }
+    setTimeout(() => { $('shareStatus').textContent = ''; }, 3000);
+  });
 }
 
 function exportJson() {

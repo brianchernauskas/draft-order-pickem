@@ -8,8 +8,8 @@
 // expose everyone's picks before the lock. The address is still saved on the
 // entry so it shows on the admin page.
 // ---------------------------------------------------------------------------
-import { EMAIL_CONFIG, TEAMS, LEAGUE_NAME, TIEBREAKER_GAME_ID } from './config.js?v=202608231311';
-import { sideLine } from './scoring.js?v=202608231311';
+import { EMAIL_CONFIG, TEAMS, LEAGUE_NAME, TIEBREAKER_GAME_ID } from './config.js?v=202608231318';
+import { sideLine } from './scoring.js?v=202608231318';
 
 export function emailConfigured() {
   const c = EMAIL_CONFIG;

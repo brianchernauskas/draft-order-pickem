@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=202608231311">
+<link rel="stylesheet" href="assets/css/style.css?v=202608231318">
 </head>
 <body>
 
@@ -80,6 +80,19 @@
   </div>
 
   <div class="panel">
+    <h3>Invite link</h3>
+    <p>Send this to the league. It opens the board with the password already applied, so nobody
+       has to type it. The password is stripped from the address bar on arrival and remembered on
+       that device. Anyone who receives a forward gets in the same way &mdash; same as handing out
+       the password itself.</p>
+    <div class="toolbar">
+      <input type="text" id="shareUrl" readonly style="flex:1;min-width:260px">
+      <button class="btn ghost sm" id="copyShareBtn" type="button">Copy link</button>
+      <span class="status" id="shareStatus"></span>
+    </div>
+  </div>
+
+  <div class="panel">
     <h3>Backup</h3>
     <div class="toolbar">
       <button class="btn ghost sm" id="exportBtn" type="button">Download all data as JSON</button>
@@ -93,6 +106,6 @@
   </div>
 </main>
 
-<script type="module" src="assets/js/admin.js?v=202608231311"></script>
+<script type="module" src="assets/js/admin.js?v=202608231318"></script>
 </body>
 </html>

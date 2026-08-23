@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 // Pure scoring logic. No DOM, no network — shared by picks, standings, admin.
 // ---------------------------------------------------------------------------
-import { GAMES, TEAMS, TIEBREAKER_GAME_ID } from './config.js?v=202608231311';
+import { GAMES, TEAMS, TIEBREAKER_GAME_ID } from './config.js?v=202608231318';
 
 // Overlay admin-entered odds / kickoffs / venues onto the static schedule.
 export function mergedGames(settings = {}) {
