@@ -7,8 +7,8 @@
 // Either way the address is saved on the entry, so the commissioner always has
 // it on the admin page.
 // ---------------------------------------------------------------------------
-import { EMAIL_CONFIG, TEAMS, LEAGUE_NAME, TIEBREAKER_GAME_ID } from './config.js';
-import { sideLine, fmtKickoff } from './scoring.js';
+import { EMAIL_CONFIG, TEAMS, LEAGUE_NAME, TIEBREAKER_GAME_ID } from './config.js?v=202608231302';
+import { sideLine } from './scoring.js?v=202608231302';
 
 export function emailConfigured() {
   const c = EMAIL_CONFIG;

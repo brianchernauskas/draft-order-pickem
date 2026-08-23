@@ -132,6 +132,18 @@ git commit -m "your message"
 git push
 ```
 
+## Before you commit a JS or CSS change
+
+```bash
+python tools/bump.py
+```
+
+GitHub Pages serves assets with `cache-control: max-age=600`. Without a version stamp a returning
+visitor can pick up a fresh copy of one module and a ten-minute-old copy of another, and if an
+export moved between them the page renders nothing at all. `bump.py` stamps `?v=<timestamp>` on
+every local script, stylesheet, and relative import so the whole set moves together. External
+imports (Firebase, EmailJS, fonts) are left alone. Content-only edits to the README do not need it.
+
 ## Running it locally
 
 ```bash
@@ -195,6 +207,7 @@ assets/js/config.js   teams, games, keys  <- edit this
 assets/js/store.js    Firestore / localStorage adapter
 assets/js/scoring.js  ATS + confidence scoring (no DOM, no network)
 assets/js/mailer.js   picks receipt: EmailJS send + mailto fallback
+tools/bump.py         cache-busting version stamp, run before each deploy
 assets/js/ui.js       shared view helpers
 assets/js/picks.js    pick form logic
 assets/js/standings.js
