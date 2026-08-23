@@ -1,8 +1,8 @@
 // ---------------------------------------------------------------------------
 // Small shared view helpers.
 // ---------------------------------------------------------------------------
-import { TEAMS, logoUrl, LEAGUE_NAME, LEAGUE_SHORT, SEASON_LABEL, HONORS } from './config.js?v=202608231318';
-import { isDemo } from './store.js?v=202608231318';
+import { TEAMS, logoUrl, LEAGUE_NAME, LEAGUE_SHORT, SEASON_LABEL, HONORS } from './config.js?v=202608231320';
+import { isDemo } from './store.js?v=202608231320';
 
 export function el(tag, attrs = {}, ...kids) {
   const node = document.createElement(tag);

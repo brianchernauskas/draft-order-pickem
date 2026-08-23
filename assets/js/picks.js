@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------
 // Pick submission page.
 // ---------------------------------------------------------------------------
-import { TEAMS, GAMES, TIEBREAKER_GAME_ID, PICKS_PASSWORD } from './config.js?v=202608231318';
-import { initStore, loadSettings, getEntry, saveEntry, slugify, isDemo } from './store.js?v=202608231318';
-import { mergedGames, spreadLabel, sideLine, lockState, fmtDay, fmtTime } from './scoring.js?v=202608231318';
-import { el, teamLogo, renderHeader, renderHonors, demoBanner, countdown } from './ui.js?v=202608231318';
-import { emailConfigured, validEmail, picksSummary, sendPicksEmail, mailtoLink } from './mailer.js?v=202608231318';
+import { TEAMS, GAMES, TIEBREAKER_GAME_ID, PICKS_PASSWORD } from './config.js?v=202608231320';
+import { initStore, loadSettings, getEntry, saveEntry, slugify, isDemo } from './store.js?v=202608231320';
+import { mergedGames, spreadLabel, sideLine, lockState, fmtDay, fmtTime } from './scoring.js?v=202608231320';
+import { el, teamLogo, renderHeader, renderHonors, demoBanner, countdown } from './ui.js?v=202608231320';
+import { emailConfigured, validEmail, picksSummary, sendPicksEmail, mailtoLink } from './mailer.js?v=202608231320';
 
 const NAME_KEY = 'dop:lastName';
 const EMAIL_KEY = 'dop:lastEmail';
@@ -46,12 +46,21 @@ function keyFromUrl() {
 // Take the key back out of the address bar once it has been applied, so it is
 // not sitting on screen or left behind in history.
 function scrubKeyFromUrl() {
-  const url = new URL(location.href);
-  url.searchParams.delete('key');
-  const hash = new URLSearchParams(url.hash.replace(/^#/, ''));
-  hash.delete('key');
-  const rest = hash.toString();
-  history.replaceState(null, '', url.pathname + url.search + (rest ? `#${rest}` : ''));
+  const scrub = () => {
+    const url = new URL(location.href);
+    if (!url.hash.includes('key=') && !url.searchParams.has('key')) return;
+    url.searchParams.delete('key');
+    const hash = new URLSearchParams(url.hash.replace(/^#/, ''));
+    hash.delete('key');
+    const rest = hash.toString();
+    history.replaceState(null, '', url.pathname + url.search + (rest ? `#${rest}` : ''));
+  };
+
+  scrub();
+  // The browser can re-apply the fragment after the initial parse, which puts
+  // the key straight back in the address bar. Run again once the load settles.
+  window.addEventListener('load', scrub, { once: true });
+  window.addEventListener('hashchange', scrub, { once: true });
 }
 
 function showGate() {
