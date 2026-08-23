@@ -173,7 +173,7 @@ function renderResults(games) {
 
     card.append(el('div', { class: 'matchup' },
       resultSide(g, 'A', res, scores),
-      el('div', { class: 'vs' }, hasScore ? 'final' : 'vs'),
+      el('div', { class: 'vs' }, hasScore ? 'final' : g.neutral ? 'vs' : 'at'),
       resultSide(g, 'B', res, scores)));
 
     host.append(card);

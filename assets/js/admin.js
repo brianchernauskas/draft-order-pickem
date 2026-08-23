@@ -234,7 +234,9 @@ function renderEntries() {
   for (const r of rows) {
     tbody.append(el('tr', {},
       el('td', { class: 'rank' }, String(r.rank)),
-      el('td', { class: 'who' }, r.name),
+      el('td', { class: 'who' },
+        el('span', {}, r.name),
+        r.email ? el('span', { class: 'submeta', style: 'display:block' }, r.email) : null),
       el('td', { class: 'pts' }, String(r.points)),
       el('td', { class: 'num' }, r.tbGuess === null ? '—' : String(r.tbGuess)),
       el('td', { class: 'ts hide-sm' }, fmtStamp(r.submittedAt)),

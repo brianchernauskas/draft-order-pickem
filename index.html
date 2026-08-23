@@ -50,7 +50,13 @@
         <span class="note">Use the same name if you come back to edit before kickoff.</span>
       </div>
       <div class="field">
-        <label for="loadName">Already submitted?</label>
+        <label for="playerEmail">Email (optional)</label>
+        <input id="playerEmail" type="email" autocomplete="email" autocapitalize="none"
+               spellcheck="false" placeholder="you@example.com">
+        <span class="note" id="emailNote">Get a copy of your picks sent to you and to the commissioner.</span>
+      </div>
+      <div class="field">
+        <label for="loadBtn">Already submitted?</label>
         <button class="btn ghost" id="loadBtn" type="button">Load my picks to edit</button>
         <span class="note">Pulls up your saved card so you can change it until the lock.</span>
       </div>

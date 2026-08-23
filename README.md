@@ -21,6 +21,10 @@ against the spread. Three pages:
   closed from the admin page.
 - **Pushes** (final margin lands exactly on the number) credit everyone the weight by default.
   Switch to "nobody earns the weight" on the admin page.
+- **Games are listed away team first.** The divider reads "at" for home games and "vs" for the
+  three neutral sites (Atlanta, Nashville, Green Bay). If you ever reorder `teamA`/`teamB` for a
+  game, note that it flips the meaning of `A` and `B` in every stored pick and in the saved
+  favorite for that game — safe to do before anyone submits, a migration afterwards.
 
 ## Passwords
 
@@ -36,6 +40,47 @@ Both gates are **obscurity only**. This repo is public, so anyone who views sour
 either password. They stop a forwarded link from being self-serve; they are not security. Once a
 player enters the league password it is remembered in their browser, so they only type it once
 per device.
+
+## Emailing picks (optional)
+
+Players can leave an email address on the pick form. The address is always saved with their entry
+and shows under their name on the admin page, so you have a roster of them either way.
+
+**Right now, with no setup:** after submitting, the player gets a link that opens their own mail
+app with the full picks list already written and `rhelleraz@gmail.com` already on the cc line.
+They tap send. Works today, but it relies on the player actually sending it.
+
+**To have it send automatically**, connect EmailJS — it delivers straight from the browser, which
+is the only way to send mail from a site with no server. Free tier is 200 emails a month.
+
+1. Sign up at [emailjs.com](https://www.emailjs.com) and go to **Email Services → Add New
+   Service**. Pick Gmail and connect whichever account the mail should come *from*. Copy the
+   **Service ID**.
+2. Go to **Email Templates → Create New Template** and set it up with these fields:
+   - **To Email:** `{{to_email}}`
+   - **Cc:** `{{commissioner_email}}`
+   - **Subject:** `{{subject}}`
+   - **Content:** switch the editor to plain text and put `{{picks_text}}` in the body on its own.
+     Plain text matters — the picks are formatted with line breaks that a rich-text body eats.
+
+   Copy the **Template ID**.
+3. Go to **Account → General** and copy your **Public Key**.
+4. Paste all three into `EMAIL_CONFIG` in `assets/js/config.js`, then commit and push:
+
+   ```js
+   export const EMAIL_CONFIG = {
+     publicKey: 'your_public_key',
+     serviceId: 'your_service_id',
+     templateId: 'your_template_id',
+     commissionerEmail: 'rhelleraz@gmail.com',
+   };
+   ```
+5. Recommended: **Account → Security → Allowed Domains**, add `brianchernauskas.github.io`. The
+   public key is visible in source, and this stops anyone else from sending on your quota.
+
+Sending is best-effort and runs *after* the picks are already saved to Firestore. If the email
+fails, the player sees a note saying their picks are safe and gets the mail-app link as a
+fallback. A broken email setup can never cost someone their entry.
 
 ## Firebase
 
@@ -149,6 +194,7 @@ assets/css/style.css  all styling
 assets/js/config.js   teams, games, keys  <- edit this
 assets/js/store.js    Firestore / localStorage adapter
 assets/js/scoring.js  ATS + confidence scoring (no DOM, no network)
+assets/js/mailer.js   picks receipt: EmailJS send + mailto fallback
 assets/js/ui.js       shared view helpers
 assets/js/picks.js    pick form logic
 assets/js/standings.js

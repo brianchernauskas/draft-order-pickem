@@ -24,6 +24,20 @@ export const PICKS_PASSWORD = 'degenerateffl';
 // See README for locking admin down properly.
 export const ADMIN_PASSPHRASE = 'draftorder2026';
 
+// Emails a receipt of each submitted board to the player and the commissioner.
+// Uses EmailJS, which sends straight from the browser — no server needed, which
+// is the only way this works on GitHub Pages. Free tier is 200 emails a month.
+//
+// Leave publicKey blank and the feature stays off: the email field still shows
+// up and the address is still saved with the entry, and players get a
+// "send a copy from your own mail app" link instead. See README to switch it on.
+export const EMAIL_CONFIG = {
+  publicKey: '',
+  serviceId: '',
+  templateId: '',
+  commissionerEmail: 'rhelleraz@gmail.com',
+};
+
 export const LEAGUE_NAME = 'The Degenerate Bourbon Fantasy Football League';
 export const LEAGUE_SHORT = 'DBFFL';           // used in the header on narrow screens
 export const SEASON_LABEL = 'Draft Order Pick’Em · CFB Week 1';
@@ -82,7 +96,7 @@ export const GAMES = [
   { id: 'g7',  teamA: 'UCLA', teamB: 'CAL',  kickoff: '2026-09-05T22:30:00-04:00', venue: 'Venue TBD',                              neutral: false },
   { id: 'g8',  teamA: 'LOU',  teamB: 'MISS', kickoff: '2026-09-06T15:00:00-04:00', venue: 'Nissan Stadium — Nashville, TN',     neutral: true  },
   { id: 'g9',  teamA: 'WIS',  teamB: 'ND',   kickoff: '2026-09-06T19:00:00-04:00', venue: 'Lambeau Field — Green Bay, WI',      neutral: true  },
-  { id: 'g10', teamA: 'WASH', teamB: 'WSU',  kickoff: '2026-09-06T22:00:00-04:00', venue: 'Venue TBD',                              neutral: false },
+  { id: 'g10', teamA: 'WSU',  teamB: 'WASH', kickoff: '2026-09-06T22:00:00-04:00', venue: 'Venue TBD',                              neutral: false },
 ];
 
 export const MAX_SCORE = GAMES.reduce((sum, _, i) => sum + i + 1, 0); // 55

@@ -5,8 +5,10 @@ import { TEAMS, GAMES, TIEBREAKER_GAME_ID, PICKS_PASSWORD } from './config.js';
 import { initStore, loadSettings, getEntry, saveEntry, slugify, isDemo } from './store.js';
 import { mergedGames, spreadLabel, sideLine, lockState, fmtDay, fmtTime } from './scoring.js';
 import { el, teamLogo, renderHeader, renderHonors, demoBanner, countdown } from './ui.js';
+import { emailConfigured, validEmail, picksSummary, sendPicksEmail, mailtoLink } from './mailer.js';
 
 const NAME_KEY = 'dop:lastName';
+const EMAIL_KEY = 'dop:lastEmail';
 const UNLOCK_KEY = 'dop:leagueUnlocked';
 
 const state = {
@@ -74,8 +76,16 @@ async function openBoard() {
 
   const saved = localStorage.getItem(NAME_KEY);
   if (saved) $('playerName').value = saved;
+  const savedEmail = localStorage.getItem(EMAIL_KEY);
+  if (savedEmail) $('playerEmail').value = savedEmail;
+
+  if (!emailConfigured()) {
+    $('emailNote').textContent =
+      'Saved with your entry. After you submit you get a prefilled email to send yourself, with the commissioner on cc.';
+  }
 
   $('playerName').addEventListener('input', validate);
+  $('playerEmail').addEventListener('input', validate);
   $('loadBtn').addEventListener('click', loadMine);
   $('submitBtn').addEventListener('click', submit);
 
@@ -150,9 +160,11 @@ function gameCard(g) {
     isTB ? el('span', { class: 'tb-flag' }, 'Tiebreaker game') : null,
     el('span', { class: `spread${spread === 'Line TBD' ? ' tbd' : ''}` }, spread)));
 
+  // Games are listed away-team-first, so the divider reads "at" unless it is a
+  // neutral site.
   card.append(el('div', { class: 'matchup' },
     teamButton(g, 'A'),
-    el('div', { class: 'vs' }, 'vs'),
+    el('div', { class: 'vs' }, g.neutral ? 'vs' : 'at'),
     teamButton(g, 'B')));
 
   // confidence row
@@ -266,6 +278,10 @@ function problems() {
   const name = $('playerName').value.trim();
   if (!name) out.push('enter your name');
 
+  // Email is optional, but a typo in it is worth catching.
+  const email = $('playerEmail').value.trim();
+  if (email && !validEmail(email)) out.push('check that email address');
+
   const missingPicks = state.games.filter((g) => !state.picks[g.id]).length;
   if (missingPicks) out.push(`pick ${missingPicks} more game${missingPicks > 1 ? 's' : ''}`);
 
@@ -297,6 +313,47 @@ function validate() {
     : 'Board complete — you are good to submit.';
 }
 
+// Best-effort receipt. Runs after the entry is already saved, so nothing here
+// can cost a player their picks.
+async function emailReceipt({ name, email }) {
+  const summary = picksSummary({
+    name,
+    games: state.games,
+    picks: state.picks,
+    weights: state.weights,
+    tiebreaker: state.tiebreaker,
+  });
+  const link = mailtoLink({ name, email, summary });
+
+  if (!emailConfigured()) {
+    $('banners').prepend(el('div', { class: 'banner info' },
+      el('span', {}, '✉️'),
+      el('span', {}, el('b', {}, 'Automatic email is not switched on yet. '),
+        'Your address is saved with your entry so the commissioner has it. To send yourself a copy right now, ',
+        el('a', { href: link }, 'open a prefilled email'),
+        ' — the commissioner is already on the cc line.')));
+    return;
+  }
+
+  const note = el('div', { class: 'banner info' },
+    el('span', {}, '✉️'), el('span', {}, 'Emailing a copy of your picks…'));
+  $('banners').prepend(note);
+
+  try {
+    await sendPicksEmail({ name, email, summary });
+    note.className = 'banner good';
+    note.replaceChildren(el('span', {}, '✉️'),
+      el('span', {}, el('b', {}, 'Copy sent. '),
+        `Your picks are on the way to ${email} and the commissioner.`));
+  } catch (err) {
+    console.error(err);
+    note.className = 'banner warn';
+    note.replaceChildren(el('span', {}, '⚠️'),
+      el('span', {}, el('b', {}, 'Your picks saved, but the email did not go out. '),
+        el('a', { href: link }, 'Send yourself a copy'), ' instead.'));
+  }
+}
+
 async function loadMine() {
   const name = $('playerName').value.trim();
   const status = $('status');
@@ -309,6 +366,7 @@ async function loadMine() {
   state.weights = { ...(entry.weights || {}) };
   state.tiebreaker = entry.tiebreaker ?? '';
   state.loadedId = entry.id;
+  if (entry.email) $('playerEmail').value = entry.email;
 
   for (const g of state.games) {
     const sel = document.getElementById(`w-${g.id}`);
@@ -326,6 +384,7 @@ async function submit() {
   const btn = $('submitBtn');
   const status = $('status');
   const name = $('playerName').value.trim();
+  const email = $('playerEmail').value.trim();
   if (problems().length) { validate(); return; }
 
   btn.disabled = true;
@@ -333,18 +392,26 @@ async function submit() {
   try {
     const record = await saveEntry({
       name,
+      email,
       picks: { ...state.picks },
       weights: { ...state.weights },
       tiebreaker: Number(state.tiebreaker),
     });
     localStorage.setItem(NAME_KEY, name);
-    $('banners').prepend(el('div', { class: 'banner good' },
+    if (email) localStorage.setItem(EMAIL_KEY, email);
+
+    const banner = el('div', { class: 'banner good' },
       el('span', {}, '✅'),
       el('span', {}, el('b', {}, 'Picks are in. '),
         `Recorded for ${record.name}. You can edit until first kickoff — just reload this page and hit “Load my picks to edit.” `,
-        el('a', { href: 'standings.html' }, 'See the standings →'))));
+        el('a', { href: 'standings.html' }, 'See the standings →')));
+    $('banners').prepend(banner);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     status.textContent = 'Submitted.';
+
+    // Saving the picks is the thing that matters; email is best-effort and
+    // never allowed to make a good submission look failed.
+    if (email) emailReceipt({ name, email });
   } catch (err) {
     console.error(err);
     status.textContent = 'Submit failed — see the console. Your picks are still on screen.';
