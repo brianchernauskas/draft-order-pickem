@@ -46,9 +46,14 @@ per device.
 Players can leave an email address on the pick form. The address is always saved with their entry
 and shows under their name on the admin page, so you have a roster of them either way.
 
+**The receipt goes to the player only — nobody is copied.** Sending every board to one inbox would
+let that person see the whole field's picks before the lock, which is exactly the edge a
+confidence pool is not supposed to hand out. The commissioner still sees everything on the admin
+page after the fact.
+
 **Right now, with no setup:** after submitting, the player gets a link that opens their own mail
-app with the full picks list already written and `rhelleraz@gmail.com` already on the cc line.
-They tap send. Works today, but it relies on the player actually sending it.
+app with their board already written and addressed to themselves. They tap send. Works today, but
+it relies on the player actually sending it.
 
 **To have it send automatically**, connect EmailJS — it delivers straight from the browser, which
 is the only way to send mail from a site with no server. Free tier is 200 emails a month.
@@ -58,7 +63,6 @@ is the only way to send mail from a site with no server. Free tier is 200 emails
    **Service ID**.
 2. Go to **Email Templates → Create New Template** and set it up with these fields:
    - **To Email:** `{{to_email}}`
-   - **Cc:** `{{commissioner_email}}`
    - **Subject:** `{{subject}}`
    - **Content:** switch the editor to plain text and put `{{picks_text}}` in the body on its own.
      Plain text matters — the picks are formatted with line breaks that a rich-text body eats.
@@ -72,7 +76,6 @@ is the only way to send mail from a site with no server. Free tier is 200 emails
      publicKey: 'your_public_key',
      serviceId: 'your_service_id',
      templateId: 'your_template_id',
-     commissionerEmail: 'rhelleraz@gmail.com',
    };
    ```
 5. Recommended: **Account → Security → Allowed Domains**, add `brianchernauskas.github.io`. The
@@ -175,7 +178,10 @@ Everything lives in `assets/js/config.js`:
   override these without touching the code.
 - `TEAMS` — name, mascot, ESPN team id (drives the logo), and school colors. Logos come from
   `a.espncdn.com`; if one ever fails to load, the card falls back to a color circle with the
-  team abbreviation.
+  team abbreviation. Every logo sits on a light disc: school marks are drawn for white
+  backgrounds, and California, Cincinnati and Baylor measured at 1.0–1.5:1 contrast against the
+  dark card, which is invisible. The disc goes on all of them rather than just the dark ones so
+  it reads as a deliberate treatment.
 - `HONORS` — the honor roll strip across the top of the picks and standings pages. Currently
   reigning champs (Lance & Phil) and the dress winner (Erik). Edit the names each season; add or
   remove entries and the strip re-flows on its own. `tone` is `champ` (gold) or `dress` (pink).

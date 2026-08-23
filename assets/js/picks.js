@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------
 // Pick submission page.
 // ---------------------------------------------------------------------------
-import { TEAMS, GAMES, TIEBREAKER_GAME_ID, PICKS_PASSWORD } from './config.js?v=202608231302';
-import { initStore, loadSettings, getEntry, saveEntry, slugify, isDemo } from './store.js?v=202608231302';
-import { mergedGames, spreadLabel, sideLine, lockState, fmtDay, fmtTime } from './scoring.js?v=202608231302';
-import { el, teamLogo, renderHeader, renderHonors, demoBanner, countdown } from './ui.js?v=202608231302';
-import { emailConfigured, validEmail, picksSummary, sendPicksEmail, mailtoLink } from './mailer.js?v=202608231302';
+import { TEAMS, GAMES, TIEBREAKER_GAME_ID, PICKS_PASSWORD } from './config.js?v=202608231311';
+import { initStore, loadSettings, getEntry, saveEntry, slugify, isDemo } from './store.js?v=202608231311';
+import { mergedGames, spreadLabel, sideLine, lockState, fmtDay, fmtTime } from './scoring.js?v=202608231311';
+import { el, teamLogo, renderHeader, renderHonors, demoBanner, countdown } from './ui.js?v=202608231311';
+import { emailConfigured, validEmail, picksSummary, sendPicksEmail, mailtoLink } from './mailer.js?v=202608231311';
 
 const NAME_KEY = 'dop:lastName';
 const EMAIL_KEY = 'dop:lastEmail';
@@ -81,7 +81,7 @@ async function openBoard() {
 
   if (!emailConfigured()) {
     $('emailNote').textContent =
-      'Saved with your entry. After you submit you get a prefilled email to send yourself, with the commissioner on cc.';
+      'After you submit you get a prefilled email to send yourself. Only you receive it.';
   }
 
   $('playerName').addEventListener('input', validate);
@@ -329,9 +329,9 @@ async function emailReceipt({ name, email }) {
     $('banners').prepend(el('div', { class: 'banner info' },
       el('span', {}, '✉️'),
       el('span', {}, el('b', {}, 'Automatic email is not switched on yet. '),
-        'Your address is saved with your entry so the commissioner has it. To send yourself a copy right now, ',
+        'To keep a copy of your board, ',
         el('a', { href: link }, 'open a prefilled email'),
-        ' — the commissioner is already on the cc line.')));
+        ' addressed to you.')));
     return;
   }
 
@@ -344,7 +344,7 @@ async function emailReceipt({ name, email }) {
     note.className = 'banner good';
     note.replaceChildren(el('span', {}, '✉️'),
       el('span', {}, el('b', {}, 'Copy sent. '),
-        `Your picks are on the way to ${email} and the commissioner.`));
+        `Your board is on the way to ${email}.`));
   } catch (err) {
     console.error(err);
     note.className = 'banner warn';

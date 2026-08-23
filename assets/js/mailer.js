@@ -2,13 +2,14 @@
 // Emailing a copy of a submitted board.
 //
 // Two paths, depending on whether EMAIL_CONFIG has been filled in:
-//   configured  -> EmailJS sends it automatically to the player + commissioner
+//   configured  -> EmailJS sends it automatically to the player
 //   not set up  -> we hand the player a mailto: link they can send themselves
-// Either way the address is saved on the entry, so the commissioner always has
-// it on the admin page.
+// The receipt goes to the player and nobody else: copying a commissioner would
+// expose everyone's picks before the lock. The address is still saved on the
+// entry so it shows on the admin page.
 // ---------------------------------------------------------------------------
-import { EMAIL_CONFIG, TEAMS, LEAGUE_NAME, TIEBREAKER_GAME_ID } from './config.js?v=202608231302';
-import { sideLine } from './scoring.js?v=202608231302';
+import { EMAIL_CONFIG, TEAMS, LEAGUE_NAME, TIEBREAKER_GAME_ID } from './config.js?v=202608231311';
+import { sideLine } from './scoring.js?v=202608231311';
 
 export function emailConfigured() {
   const c = EMAIL_CONFIG;
@@ -63,7 +64,6 @@ export async function sendPicksEmail({ name, email, summary }) {
 
   return emailjs.send(EMAIL_CONFIG.serviceId, EMAIL_CONFIG.templateId, {
     to_email: email,
-    commissioner_email: EMAIL_CONFIG.commissionerEmail,
     player_name: name,
     picks_text: summary,
     submitted_at: new Date().toLocaleString(),
@@ -72,11 +72,10 @@ export async function sendPicksEmail({ name, email, summary }) {
 }
 
 // Zero-setup fallback: opens the player's own mail app with everything filled
-// in, commissioner already on the cc line. They just hit send.
+// in and addressed to themselves. They just hit send.
 export function mailtoLink({ name, email, summary }) {
   const to = encodeURIComponent(email || '');
-  const cc = encodeURIComponent(EMAIL_CONFIG.commissionerEmail || '');
   const subject = encodeURIComponent(`${name} — DBFFL draft order picks`);
   const body = encodeURIComponent(summary);
-  return `mailto:${to}?cc=${cc}&subject=${subject}&body=${body}`;
+  return `mailto:${to}?subject=${subject}&body=${body}`;
 }

@@ -24,7 +24,8 @@ export const PICKS_PASSWORD = 'degenerateffl';
 // See README for locking admin down properly.
 export const ADMIN_PASSPHRASE = 'draftorder2026';
 
-// Emails a receipt of each submitted board to the player and the commissioner.
+// Emails each player a receipt of their own board. Nobody is copied — a
+// commissioner copy would let one person see everyone's picks before the lock.
 // Uses EmailJS, which sends straight from the browser — no server needed, which
 // is the only way this works on GitHub Pages. Free tier is 200 emails a month.
 //
@@ -35,7 +36,6 @@ export const EMAIL_CONFIG = {
   publicKey: '',
   serviceId: '',
   templateId: '',
-  commissionerEmail: 'rhelleraz@gmail.com',
 };
 
 export const LEAGUE_NAME = 'The Degenerate Bourbon Fantasy Football League';

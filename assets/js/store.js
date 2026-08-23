@@ -2,7 +2,7 @@
 // Storage adapter. Talks to Firestore when configured, otherwise falls back to
 // localStorage so the site is fully clickable before any backend exists.
 // ---------------------------------------------------------------------------
-import { FIREBASE_CONFIG } from './config.js?v=202608231302';
+import { FIREBASE_CONFIG } from './config.js?v=202608231311';
 
 const SETTINGS_KEY = 'dop:settings';
 const ENTRIES_KEY = 'dop:entries';
