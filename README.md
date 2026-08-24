@@ -100,22 +100,24 @@ The setup steps are kept below for reference, in case the keys ever need rotatin
      templateId: 'your_template_id',
    };
    ```
-5. Recommended: at [dashboard.emailjs.com/admin/account/security](https://dashboard.emailjs.com/admin/account/security),
-   add the site to **Domains**. The entry must be a full origin — EmailJS documents the format as
-   `<scheme>://<hostname>[:<port>]`, so it has to be:
+5. **Origin restriction is not available on the free plan.** EmailJS gates "Domain whitelist"
+   behind the Personal tier ($9/mo), so on Free the public key in `config.js` can be used from
+   any origin. Confirmed by sending successfully from `https://example.com`.
 
-   ```
-   https://brianchernauskas.github.io
-   ```
+   This is a deliberate accepted risk, not an oversight:
 
-   A bare hostname (`brianchernauskas.github.io`) does **not** match and the list silently fails
-   open — sends from any origin keep working. Verify it by trying a send from somewhere else; a
-   correctly configured list rejects it.
+   - An abuser can only send *this* template with *this* content — EmailJS never lets a stolen
+     public key compose arbitrary mail — so the exposure is a burned 200/month quota, not spam
+     going out in your name.
+   - A burned quota degrades softly. Picks still save to Firestore; the player just sees "your
+     picks saved, but the email did not go out" plus the mail-app link. Verified by deliberately
+     breaking the template ID and submitting.
+   - If it ever is abused, rotate the EmailJS keys and paste the new ones into `EMAIL_CONFIG`.
+     One line, one push.
 
-   What this does and does not protect: the public key is readable in the page source, so without
-   the list anyone can spend your 200/month quota. They cannot send arbitrary spam — EmailJS only
-   ever sends *your* template with *your* content — so the realistic damage is a burned quota, not
-   mail going out in your name.
+   If you want cover for the one weekend that matters, subscribing for a single month around the
+   games and cancelling costs $9 and closes the window entirely.
+
 6. Verify it: open the admin page, find **Email receipts**, put your own address in and hit
    **Send test email**. It pushes a sample board through the real template, so a test that lands
    means player receipts will land too. Any error comes back inline with EmailJS's own message.
