@@ -100,8 +100,22 @@ The setup steps are kept below for reference, in case the keys ever need rotatin
      templateId: 'your_template_id',
    };
    ```
-5. Recommended: **Account → Security → Allowed Domains**, add `brianchernauskas.github.io`. The
-   public key is visible in source, and this stops anyone else from sending on your quota.
+5. Recommended: at [dashboard.emailjs.com/admin/account/security](https://dashboard.emailjs.com/admin/account/security),
+   add the site to **Domains**. The entry must be a full origin — EmailJS documents the format as
+   `<scheme>://<hostname>[:<port>]`, so it has to be:
+
+   ```
+   https://brianchernauskas.github.io
+   ```
+
+   A bare hostname (`brianchernauskas.github.io`) does **not** match and the list silently fails
+   open — sends from any origin keep working. Verify it by trying a send from somewhere else; a
+   correctly configured list rejects it.
+
+   What this does and does not protect: the public key is readable in the page source, so without
+   the list anyone can spend your 200/month quota. They cannot send arbitrary spam — EmailJS only
+   ever sends *your* template with *your* content — so the realistic damage is a burned quota, not
+   mail going out in your name.
 6. Verify it: open the admin page, find **Email receipts**, put your own address in and hit
    **Send test email**. It pushes a sample board through the real template, so a test that lands
    means player receipts will land too. Any error comes back inline with EmailJS's own message.
