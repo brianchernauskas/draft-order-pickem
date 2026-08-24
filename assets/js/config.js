@@ -33,9 +33,9 @@ export const ADMIN_PASSPHRASE = 'draftorder2026';
 // up and the address is still saved with the entry, and players get a
 // "send a copy from your own mail app" link instead. See README to switch it on.
 export const EMAIL_CONFIG = {
-  publicKey: '',
-  serviceId: '',
-  templateId: '',
+  publicKey: '7HdyBZlJwZtLqAl2v',
+  serviceId: 'service_aaw5cl8',
+  templateId: 'template_obor8bx',
 };
 
 export const LEAGUE_NAME = 'The Degenerate Bourbon Fantasy Football League';

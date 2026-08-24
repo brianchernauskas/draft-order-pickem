@@ -74,8 +74,11 @@ page after the fact.
 app with their board already written and addressed to themselves. They tap send. Works today, but
 it relies on the player actually sending it.
 
-**To have it send automatically**, connect EmailJS — it delivers straight from the browser, which
-is the only way to send mail from a site with no server. Free tier is 200 emails a month.
+**Automatic sending is connected** via EmailJS (service `service_aaw5cl8`), which delivers
+straight from the browser — the only way to send mail from a site with no server. Free tier is
+200 emails a month, and this league will use maybe fifteen.
+
+The setup steps are kept below for reference, in case the keys ever need rotating.
 
 1. Sign up at [emailjs.com](https://www.emailjs.com) and go to **Email Services → Add New
    Service**. Pick Gmail and connect whichever account the mail should come *from*. Copy the
