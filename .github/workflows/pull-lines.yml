@@ -1,0 +1,34 @@
+name: Pull Week 1 lines
+
+# One scheduled pull on Saturday 29 August 2026, 08:00 Arizona (15:00 UTC).
+# GitHub's scheduler is best-effort and can run late under load, so treat this as
+# "sometime Saturday morning" rather than 08:00 on the dot.
+on:
+  schedule:
+    - cron: '0 15 29 8 *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Fetch and print the lines without writing them to the board'
+        type: boolean
+        default: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Pull lines
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          if [ -z "$ODDS_API_KEY" ]; then
+            echo "ODDS_API_KEY secret is not set. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          node tools/pull-lines.mjs ${{ inputs.dry_run && '--dry-run' || '' }}

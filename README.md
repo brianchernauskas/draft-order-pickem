@@ -129,6 +129,47 @@ Sending is best-effort and runs *after* the picks are already saved to Firestore
 fails, the player sees a note saying their picks are safe and gets the mail-app link as a
 fallback. A broken email setup can never cost someone their entry.
 
+## Automatic lines
+
+A GitHub Action pulls Week 1 spreads from the-odds-api.com and writes them straight to the board:
+`.github/workflows/pull-lines.yml` running `tools/pull-lines.mjs`.
+
+**Schedule:** once, Saturday 29 August 2026 at 08:00 Arizona (15:00 UTC). GitHub's scheduler is
+best-effort and can run late under load, so treat it as "Saturday morning", not 08:00 sharp.
+
+**The number it uses** is the consensus across US books — the most common line, ties broken toward
+the median. Same `modal()` rule Gridiron Edge uses, so both tools quote the same number and no
+single book's outlier can set your board.
+
+**Setup — add the API key as a repo secret.** It must not go in `config.js`; that file is public
+and the key is metered.
+
+```bash
+gh secret set ODDS_API_KEY --repo brianchernauskas/draft-order-pickem
+```
+
+Or via **Settings → Secrets and variables → Actions → New repository secret**, named
+`ODDS_API_KEY`.
+
+**Run it by hand** any time from the Actions tab (**Pull Week 1 lines → Run workflow**). Tick
+*dry run* to print what it would write without touching the board — worth doing once before the
+scheduled run.
+
+**It fails rather than half-fills.** Every game is resolved before anything is written, and the
+run aborts if a game cannot be matched, if fewer than three books priced it, or if a number looks
+implausible. A partial board is worse than none, because nobody can tell which lines are real. A
+failed run emails you through GitHub's normal Actions notifications.
+
+**It only touches odds.** Venues and kickoff times you set on the admin page are read and written
+back untouched; the job sets `favorite` and `line` only. You can override anything afterwards on
+the admin page — the job does not run again.
+
+Offline tests for the matching and consensus logic, no API key needed:
+
+```bash
+node tools/pull-lines.test.mjs
+```
+
 ## Firebase
 
 Already connected to the **`bourbonffldraft`** project — the config is in `assets/js/config.js`
