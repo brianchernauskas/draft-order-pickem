@@ -13,6 +13,11 @@ on:
         type: boolean
         default: false
 
+# Two runs writing the settings doc at once would race on read-modify-write.
+concurrency:
+  group: board-writes
+  cancel-in-progress: false
+
 jobs:
   pull:
     runs-on: ubuntu-latest

@@ -4,7 +4,9 @@
  *   node tools/pull-lines.test.mjs
  */
 import { GAMES, TEAMS } from '../assets/js/config.js';
-import { modal, teamKeyFor, resolveGame } from './pull-lines.mjs';
+import { modal, teamKeyFor } from './lib.mjs';
+import { resolveGame } from './pull-lines.mjs';
+import { finalFor } from './pull-scores.mjs';
 
 let failures = 0;
 const check = (name, cond, detail = '') => {
@@ -86,6 +88,30 @@ for (const g of GAMES) {
   try { resolveGame(g, slate); } catch (e) { allOk = false; console.log(`  FAIL ${g.id}: ${e.message}`); }
 }
 check('all ten games resolve against a full slate', allOk);
+
+console.log('\nscores');
+const gW = GAMES.find((g) => g.id === 'g9');   // Wisconsin / Notre Dame
+const scoreEvent = (completed, a, b) => ({
+  commence_time: '2026-09-06T23:00:00Z',
+  completed,
+  home_team: NAMES[gW.teamB],
+  away_team: NAMES[gW.teamA],
+  scores: [
+    { name: NAMES[gW.teamA], score: String(a) },
+    { name: NAMES[gW.teamB], score: String(b) },
+  ],
+});
+check('records a completed final',
+  JSON.stringify(finalFor(scoreEvent(true, 17, 31), gW)) === '{"a":17,"b":31}',
+  JSON.stringify(finalFor(scoreEvent(true, 17, 31), gW)));
+check('ignores a game still in progress', finalFor(scoreEvent(false, 10, 7), gW) === null);
+check('ignores a missing event', finalFor(undefined, gW) === null);
+check('ignores an event with no score rows', finalFor({
+  commence_time: '2026-09-06T23:00:00Z', completed: true,
+  home_team: NAMES[gW.teamB], away_team: NAMES[gW.teamA], scores: [],
+}, gW) === null);
+check('a 0-0 final is still a final',
+  JSON.stringify(finalFor(scoreEvent(true, 0, 0), gW)) === '{"a":0,"b":0}');
 
 console.log(failures ? `\n${failures} failing check(s)\n` : '\nall checks passed\n');
 process.exitCode = failures ? 1 : 0;

@@ -164,11 +164,53 @@ failed run emails you through GitHub's normal Actions notifications.
 back untouched; the job sets `favorite` and `line` only. You can override anything afterwards on
 the admin page — the job does not run again.
 
-Offline tests for the matching and consensus logic, no API key needed:
+## Automatic scores
+
+A second Action records finals as games end, which scores the board with no manual entry:
+`.github/workflows/pull-scores.yml` running `tools/pull-scores.mjs`.
+
+**Schedule:** hourly across 3–7 September UTC. The window is UTC because the Thursday opener kicks
+at 23:30 UTC and the Sunday nightcap finishes early on the 7th.
+
+**It is cheap despite running hourly.** The scores endpoint costs 2 credits a call, so the job
+reads Firestore first — which is free — and only reaches for the API when a game has actually
+kicked off more than three hours ago and is still missing a score. Runs with nothing to do make no
+API call at all, and once all ten finals are in every remaining run exits immediately. Expect
+roughly 20–30 paid calls across the weekend, not 120.
+
+**It only fills blanks.** A score you typed on the admin page is never overwritten, so you always
+have the last word. Correcting a bad number by hand sticks.
+
+**It only writes finals.** A game still in progress reports `completed: false` and is skipped, so
+a half-time score can never land on the board.
+
+Run it by hand from the Actions tab. *Dry run* prints what it would record without writing;
+*force* skips the three-hour gate and checks every unrecorded game immediately, at a cost of 2
+credits.
+
+## Quota budget
+
+The free Odds API tier is 500 credits a month. This project's expected use:
+
+| Job | Cost |
+|---|---|
+| Lines, one pull Sat 8/29 | 1 |
+| Scores, across the weekend | ~40–60 |
+| Manual dry runs | 1–2 each |
+
+Comfortably inside the tier with room for re-runs. Both jobs log `x-requests-remaining` so every
+run tells you where you stand.
+
+## Testing the jobs
+
+Offline, no API key and no network:
 
 ```bash
 node tools/pull-lines.test.mjs
 ```
+
+Covers the consensus maths, the school-name matching including the Washington/Washington State and
+Miami/Miami (OH) traps, every abort guard, and the finals parsing.
 
 ## Firebase
 

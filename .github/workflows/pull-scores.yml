@@ -1,0 +1,49 @@
+name: Pull final scores
+
+# Hourly across the Week 1 window, 3-7 September UTC. The Thursday opener kicks
+# at 23:30 UTC on the 3rd and the Sunday nightcap finishes early on the 7th, so
+# the window is expressed in UTC rather than local dates.
+#
+# Most of these runs cost nothing: the job reads Firestore first and only calls
+# the Odds API when a game has kicked off and is still missing a score. Once all
+# ten are recorded every remaining run exits immediately.
+on:
+  schedule:
+    - cron: '0 * 3-7 9 *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Fetch and print finals without writing them'
+        type: boolean
+        default: false
+      force:
+        description: 'Skip the elapsed-time gate and check every unrecorded game now (costs 2 credits)'
+        type: boolean
+        default: false
+
+# Two runs writing the settings doc at once would race on read-modify-write.
+concurrency:
+  group: board-writes
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Pull scores
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          if [ -z "$ODDS_API_KEY" ]; then
+            echo "ODDS_API_KEY secret is not set. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          node tools/pull-scores.mjs \
+            ${{ inputs.dry_run && '--dry-run' || '' }} \
+            ${{ inputs.force && '--force' || '' }}
