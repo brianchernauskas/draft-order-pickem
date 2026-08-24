@@ -309,9 +309,10 @@ Everything lives in `assets/js/config.js`:
   backgrounds, and California, Cincinnati and Baylor measured at 1.0–1.5:1 contrast against the
   dark card, which is invisible. The disc goes on all of them rather than just the dark ones so
   it reads as a deliberate treatment.
-- `HONORS` — the honor roll strip across the top of the picks and standings pages. Currently
-  reigning champs (Lance & Phil) and the dress winner (Erik). Edit the names each season; add or
-  remove entries and the strip re-flows on its own. `tone` is `champ` (gold) or `dress` (pink).
+- `HONORS` — the honor roll strip across the top of the picks and standings pages. Newest first.
+  Add a row each season and the strip re-flows on its own — it is an auto-fit grid, so three sit
+  in a row on desktop and stack on a phone with no layout change needed. `tone` is `champ` (gold,
+  for the reigning champs), `past` (pewter, for prior seasons) or `dress` (pink).
 - `LEAGUE_NAME` / `LEAGUE_SHORT` — the full name shows in the header on desktop, `LEAGUE_SHORT`
   ("DBFFL") swaps in on phones so it stays one line.
 - `PICKS_PASSWORD` / `ADMIN_PASSPHRASE`, `SEASON_LABEL`, `TIEBREAKER_GAME_ID`.

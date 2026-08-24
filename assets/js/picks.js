@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------
 // Pick submission page.
 // ---------------------------------------------------------------------------
-import { TEAMS, GAMES, TIEBREAKER_GAME_ID, PICKS_PASSWORD } from './config.js?v=202608240911';
-import { initStore, loadSettings, getEntry, saveEntry, slugify, isDemo } from './store.js?v=202608240911';
-import { mergedGames, spreadLabel, sideLine, lockState, fmtDay, fmtTime } from './scoring.js?v=202608240911';
-import { el, teamLogo, renderHeader, renderHonors, demoBanner, countdown } from './ui.js?v=202608240911';
-import { emailConfigured, validEmail, picksSummary, sendPicksEmail, mailtoLink } from './mailer.js?v=202608240911';
+import { TEAMS, GAMES, TIEBREAKER_GAME_ID, PICKS_PASSWORD } from './config.js?v=202608241010';
+import { initStore, loadSettings, getEntry, saveEntry, slugify, isDemo } from './store.js?v=202608241010';
+import { mergedGames, spreadLabel, sideLine, lockState, fmtDay, fmtTime } from './scoring.js?v=202608241010';
+import { el, teamLogo, renderHeader, renderHonors, demoBanner, countdown } from './ui.js?v=202608241010';
+import { emailConfigured, validEmail, picksSummary, sendPicksEmail, mailtoLink } from './mailer.js?v=202608241010';
 
 const NAME_KEY = 'dop:lastName';
 const EMAIL_KEY = 'dop:lastEmail';

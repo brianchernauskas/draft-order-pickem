@@ -84,8 +84,10 @@ nav.main a:hover { color: var(--ink); background: var(--panel); }
 nav.main a.active { color: #0b1120; background: var(--accent); }
 
 /* ---------- honor roll ---------- */
+/* auto-fit so a season can be added without touching the layout */
 .honors {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+  gap: 12px; margin-top: 22px;
 }
 .honor {
   display: flex; align-items: center; gap: 14px; min-width: 0;
@@ -97,6 +99,8 @@ nav.main a.active { color: #0b1120; background: var(--accent); }
   background: linear-gradient(115deg, var(--glow) 0%, transparent 55%); opacity: .16;
 }
 .honor.champ { --glow: #f5c451; border-color: rgba(245,196,81,.45); }
+/* prior seasons in pewter, so the reigning champs still read as current */
+.honor.past  { --glow: #b8c2d4; border-color: rgba(184,194,212,.3); }
 .honor.dress { --glow: #ec4899; border-color: rgba(236,72,153,.35); }
 .honor .ico { font-size: 30px; line-height: 1; flex: none; position: relative; }
 .honor .htext { min-width: 0; position: relative; }
@@ -105,6 +109,8 @@ nav.main a.active { color: #0b1120; background: var(--accent); }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .honor.champ .hlabel { color: var(--accent); }
+.honor.past .hlabel  { color: #b8c2d4; }
+.honor.past .ico     { filter: grayscale(.55) opacity(.85); }
 .honor.dress .hlabel { color: #f9a8d4; }
 .honor .hnames {
   font-family: var(--font-cond); font-size: 25px; letter-spacing: .02em;
