@@ -47,6 +47,7 @@ export const SEASON_LABEL = 'Draft Order Pick’Em · CFB Week 1';
 export const HONORS = [
   { icon: '🏆', label: '2026 Champs',              names: 'Lance & Phil', tone: 'champ' },
   { icon: '🏆', label: '2025 Champs',              names: 'Rich & Brian', tone: 'past'  },
+  { icon: '🏆', label: '2024 Champ',               names: 'Erik',         tone: 'past'  },
   { icon: '👗', label: 'Last Place / Dress Winner', names: 'Erik',         tone: 'dress' },
 ];
 

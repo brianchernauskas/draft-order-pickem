@@ -104,9 +104,11 @@ nav.main a.active { color: #0b1120; background: var(--accent); }
 .honor.dress { --glow: #ec4899; border-color: rgba(236,72,153,.35); }
 .honor .ico { font-size: 30px; line-height: 1; flex: none; position: relative; }
 .honor .htext { min-width: 0; position: relative; }
+/* Wraps rather than ellipsising: once four seasons share a row the cards get
+   narrow enough to cut "Last Place / Dress Winner" short. */
 .honor .hlabel {
-  font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint);
+  line-height: 1.35;
 }
 .honor.champ .hlabel { color: var(--accent); }
 .honor.past .hlabel  { color: #b8c2d4; }
