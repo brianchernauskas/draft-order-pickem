@@ -8,8 +8,8 @@
 // expose everyone's picks before the lock. The address is still saved on the
 // entry so it shows on the admin page.
 // ---------------------------------------------------------------------------
-import { EMAIL_CONFIG, TEAMS, LEAGUE_NAME, TIEBREAKER_GAME_ID } from './config.js?v=202608231320';
-import { sideLine } from './scoring.js?v=202608231320';
+import { EMAIL_CONFIG, TEAMS, LEAGUE_NAME, TIEBREAKER_GAME_ID } from './config.js?v=202608240842';
+import { sideLine } from './scoring.js?v=202608240842';
 
 export function emailConfigured() {
   const c = EMAIL_CONFIG;
@@ -60,15 +60,31 @@ export async function sendPicksEmail({ name, email, summary }) {
 
   const mod = await import('https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm');
   const emailjs = mod.default || mod;
-  emailjs.init({ publicKey: EMAIL_CONFIG.publicKey });
 
-  return emailjs.send(EMAIL_CONFIG.serviceId, EMAIL_CONFIG.templateId, {
-    to_email: email,
-    player_name: name,
-    picks_text: summary,
-    submitted_at: new Date().toLocaleString(),
-    subject: `${name} — DBFFL draft order picks`,
-  });
+  // v4 signature is send(serviceId, templateId, params, options). Passing the
+  // public key in options rather than calling init() first keeps this free of
+  // module-level state, so it cannot fail on call ordering.
+  return emailjs.send(
+    EMAIL_CONFIG.serviceId,
+    EMAIL_CONFIG.templateId,
+    {
+      to_email: email,
+      player_name: name,
+      picks_text: summary,
+      submitted_at: new Date().toLocaleString(),
+      subject: `${name} — DBFFL draft order picks`,
+    },
+    { publicKey: EMAIL_CONFIG.publicKey },
+  );
+}
+
+// Exercises the exact same template variables as a real submission, so a
+// successful test means real receipts will work too.
+export function sampleSummary(games) {
+  const picks = {};
+  const weights = {};
+  games.forEach((g, i) => { picks[g.id] = i % 2 ? 'B' : 'A'; weights[g.id] = games.length - i; });
+  return picksSummary({ name: 'Test Run', games, picks, weights, tiebreaker: 51 });
 }
 
 // Zero-setup fallback: opens the player's own mail app with everything filled

@@ -99,6 +99,12 @@ is the only way to send mail from a site with no server. Free tier is 200 emails
    ```
 5. Recommended: **Account → Security → Allowed Domains**, add `brianchernauskas.github.io`. The
    public key is visible in source, and this stops anyone else from sending on your quota.
+6. Verify it: open the admin page, find **Email receipts**, put your own address in and hit
+   **Send test email**. It pushes a sample board through the real template, so a test that lands
+   means player receipts will land too. Any error comes back inline with EmailJS's own message.
+
+The **Email receipts** panel also tells you at a glance whether the keys are live, so you never
+have to guess whether sending is on.
 
 Sending is best-effort and runs *after* the picks are already saved to Firestore. If the email
 fails, the player sees a note saying their picks are safe and gets the mail-app link as a

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=202608231320">
+<link rel="stylesheet" href="assets/css/style.css?v=202608240842">
 </head>
 <body>
 
@@ -80,6 +80,20 @@
   </div>
 
   <div class="panel">
+    <h3>Email receipts</h3>
+    <p id="emailState">Checking&hellip;</p>
+    <div class="toolbar">
+      <input type="email" id="testEmail" placeholder="you@example.com" autocapitalize="none"
+             spellcheck="false" style="flex:1;min-width:220px">
+      <button class="btn ghost sm" id="sendTestBtn" type="button">Send test email</button>
+      <span class="status" id="testStatus"></span>
+    </div>
+    <p style="margin:12px 0 0;font-size:12px;color:var(--ink-faint)">
+      Sends a sample board through the real template, so a test that lands means player receipts
+      will work too. Check spam if it does not show up.</p>
+  </div>
+
+  <div class="panel">
     <h3>Invite link</h3>
     <p>Send this to the league. It opens the board with the password already applied, so nobody
        has to type it. The password is stripped from the address bar on arrival and remembered on
@@ -106,6 +120,6 @@
   </div>
 </main>
 
-<script type="module" src="assets/js/admin.js?v=202608231320"></script>
+<script type="module" src="assets/js/admin.js?v=202608240842"></script>
 </body>
 </html>

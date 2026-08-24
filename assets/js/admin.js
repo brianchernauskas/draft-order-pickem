@@ -1,10 +1,11 @@
 // ---------------------------------------------------------------------------
 // Commissioner console: lines, kickoffs, venues, finals, lock, entries.
 // ---------------------------------------------------------------------------
-import { TEAMS, GAMES, ADMIN_PASSPHRASE, PICKS_PASSWORD, TIEBREAKER_GAME_ID, logoUrl } from './config.js?v=202608231320';
-import { initStore, loadSettings, saveSettings, loadEntries, deleteEntry, isDemo } from './store.js?v=202608231320';
-import { mergedGames, gameResult, lockState, scoreEntries, formatLine, fmtTime } from './scoring.js?v=202608231320';
-import { el, renderHeader, demoBanner, fmtStamp } from './ui.js?v=202608231320';
+import { TEAMS, GAMES, ADMIN_PASSPHRASE, PICKS_PASSWORD, TIEBREAKER_GAME_ID, logoUrl } from './config.js?v=202608240842';
+import { initStore, loadSettings, saveSettings, loadEntries, deleteEntry, isDemo } from './store.js?v=202608240842';
+import { mergedGames, gameResult, lockState, scoreEntries, formatLine, fmtTime } from './scoring.js?v=202608240842';
+import { el, renderHeader, demoBanner, fmtStamp } from './ui.js?v=202608240842';
+import { emailConfigured, validEmail, sampleSummary, sendPicksEmail } from './mailer.js?v=202608240842';
 
 const SESSION_KEY = 'dop:admin';
 const $ = (id) => document.getElementById(id);
@@ -47,6 +48,7 @@ async function start() {
   $('revertBtn').addEventListener('click', async () => { await reload(); flash('Reverted to last saved settings.'); });
   $('exportBtn').addEventListener('click', exportJson);
   setupShareLink();
+  setupEmailTest();
   $('lockMode').addEventListener('change', () => { draft.lockOverride = $('lockMode').value; renderLockNote(); markDirty(); });
   $('pushRule').addEventListener('change', () => { draft.pushRule = $('pushRule').value; markDirty(); });
 }
@@ -282,6 +284,45 @@ async function persist() {
   } finally {
     $('saveBtn').disabled = false;
   }
+}
+
+// --- email receipts --------------------------------------------------------
+
+function setupEmailTest() {
+  const state = $('emailState');
+  const btn = $('sendTestBtn');
+  const field = $('testEmail');
+
+  if (!emailConfigured()) {
+    state.textContent = 'Not connected yet. Players still get a prefilled mail-app link after '
+      + 'submitting, and their address is saved either way. Add your EmailJS keys to '
+      + 'assets/js/config.js to switch on automatic sending - see the README.';
+    btn.disabled = true;
+    field.disabled = true;
+    return;
+  }
+
+  state.textContent = 'Connected. Players who leave an address get their board emailed on submit.';
+  btn.addEventListener('click', async () => {
+    const to = field.value.trim();
+    if (!validEmail(to)) { $('testStatus').textContent = 'Enter a valid address first.'; return; }
+    btn.disabled = true;
+    $('testStatus').textContent = 'Sending...';
+    try {
+      await sendPicksEmail({
+        name: 'Test Run',
+        email: to,
+        summary: sampleSummary(mergedGames(draft)),
+      });
+      $('testStatus').textContent = `Sent to ${to}.`;
+    } catch (err) {
+      console.error(err);
+      const detail = (err && (err.text || err.message)) || String(err);
+      $('testStatus').textContent = `Failed: ${detail}`;
+    } finally {
+      btn.disabled = false;
+    }
+  });
 }
 
 // --- invite link -----------------------------------------------------------
