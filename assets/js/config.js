@@ -45,8 +45,8 @@ export const SEASON_LABEL = 'Draft Order Pick’Em · CFB Week 1';
 // Shown across the top of the picks and standings pages.
 // Newest first. Add a row each season; the strip re-flows on its own.
 export const HONORS = [
-  { icon: '🏆', label: '2026 Champs',              names: 'Lance & Phil', tone: 'champ' },
-  { icon: '🏆', label: '2025 Champs',              names: 'Rich & Brian', tone: 'past'  },
+  { icon: '🏆', label: '2026 Champ',               names: 'Lance',        tone: 'champ' },
+  { icon: '🏆', label: '2025 Champ',               names: 'Brian',        tone: 'past'  },
   { icon: '🏆', label: '2024 Champ',               names: 'Erik',         tone: 'past'  },
   { icon: '👗', label: 'Last Place / Dress Winner', names: 'Erik',         tone: 'dress' },
 ];
