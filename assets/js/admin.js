@@ -1,11 +1,11 @@
 // ---------------------------------------------------------------------------
 // Commissioner console: lines, kickoffs, venues, finals, lock, entries.
 // ---------------------------------------------------------------------------
-import { TEAMS, GAMES, ADMIN_PASSPHRASE, PICKS_PASSWORD, TIEBREAKER_GAME_ID, logoUrl } from './config.js?v=202608300238';
-import { initStore, loadSettings, saveSettings, loadEntries, deleteEntry, isDemo } from './store.js?v=202608300238';
-import { mergedGames, gameResult, lockState, scoreEntries, formatLine, fmtTime } from './scoring.js?v=202608300238';
-import { el, renderHeader, demoBanner, fmtStamp } from './ui.js?v=202608300238';
-import { emailConfigured, validEmail, sampleSummary, sendPicksEmail } from './mailer.js?v=202608300238';
+import { TEAMS, GAMES, ADMIN_PASSPHRASE, PICKS_PASSWORD, TIEBREAKER_GAME_ID, logoUrl } from './config.js?v=202608301829';
+import { initStore, loadSettings, saveSettings, loadEntries, deleteEntry, isDemo } from './store.js?v=202608301829';
+import { mergedGames, gameResult, lockState, scoreEntries, formatLine, fmtTime } from './scoring.js?v=202608301829';
+import { el, renderHeader, demoBanner, fmtStamp } from './ui.js?v=202608301829';
+import { emailConfigured, validEmail, sampleSummary, sendPicksEmail } from './mailer.js?v=202608301829';
 
 const SESSION_KEY = 'dop:admin';
 const $ = (id) => document.getElementById(id);

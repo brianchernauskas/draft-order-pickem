@@ -1,13 +1,13 @@
 // ---------------------------------------------------------------------------
 // Live standings / draft order.
 // ---------------------------------------------------------------------------
-import { TEAMS, TIEBREAKER_GAME_ID, MAX_SCORE, logoUrl } from './config.js?v=202608300238';
-import { initStore, watchEntries, watchSettings } from './store.js?v=202608300238';
+import { TEAMS, TIEBREAKER_GAME_ID, MAX_SCORE, logoUrl } from './config.js?v=202608301829';
+import { initStore, watchEntries, watchSettings } from './store.js?v=202608301829';
 import {
   mergedGames, spreadLabel, sideLine, gameResult, scoreEntries,
   tiebreakerActual, lockState, fmtTime, fmtDay,
-} from './scoring.js?v=202608300238';
-import { el, teamLogo, renderHeader, renderHonors, demoBanner, fmtStamp } from './ui.js?v=202608300238';
+} from './scoring.js?v=202608301829';
+import { el, teamLogo, renderHeader, renderHonors, demoBanner, fmtStamp } from './ui.js?v=202608301829';
 
 const state = { entries: [], settings: {}, expanded: new Set() };
 const $ = (id) => document.getElementById(id);
@@ -31,7 +31,7 @@ function render() {
 
   renderSummary(games, rows, decided, lock);
   renderPodium(rows, decided);
-  renderBoard(rows, games, decided);
+  renderBoard(rows, games, decided, lock);
   renderResults(games);
 }
 
@@ -68,7 +68,7 @@ function renderPodium(rows, decided) {
       el('div', { class: 'pts' }, `${r.points} pts · ${r.correct}-${r.decided - r.correct} ATS`)))));
 }
 
-function renderBoard(rows, games, decided) {
+function renderBoard(rows, games, decided, lock) {
   const host = $('board');
   if (!rows.length) {
     host.replaceChildren(el('div', { class: 'empty' },
@@ -79,6 +79,12 @@ function renderBoard(rows, games, decided) {
   }
 
   const anyPending = decided < games.length;
+  // Before the lock a card is nobody's business but its owner's: reading the field
+  // early is exactly the edge a confidence pool is not supposed to hand out. Names
+  // and timestamps still show so players can confirm their entry landed, and the
+  // tiebreaker guess stays covered with the rest of the card.
+  const concealed = !lock.locked;
+
   const table = el('table', { class: 'board' },
     el('thead', {}, el('tr', {},
       el('th', {}, '#'),
@@ -91,30 +97,36 @@ function renderBoard(rows, games, decided) {
 
   const tbody = el('tbody');
   for (const r of rows) {
-    const open = state.expanded.has(r.id);
-    const tr = el('tr', { class: `expandable r${r.rank}` },
+    const open = !concealed && state.expanded.has(r.id);
+    const tr = el('tr', { class: `${concealed ? '' : 'expandable '}r${r.rank}` },
       el('td', { class: 'rank' }, String(r.rank)),
       el('td', { class: 'who' },
         el('span', {}, r.name),
         r.tied ? el('span', { class: 'tiedflag' }, 'tied') : null,
         // same facts as the hide-sm columns, folded under the name on phones
-        el('span', { class: 'submeta' },
-          r.tbGuess === null ? 'no tiebreaker' : `WIS/ND ${r.tbGuess}`,
-          r.tbDiff === null ? '' : r.tbDiff === 0 ? ' · exact' : ` · off by ${r.tbDiff}`,
-          anyPending ? ` · ${r.possible} max` : '')),
+        el('span', { class: 'submeta' }, concealed
+          ? 'card hidden until lock'
+          : [
+            r.tbGuess === null ? 'no tiebreaker' : `WIS/ND ${r.tbGuess}`,
+            r.tbDiff === null ? '' : r.tbDiff === 0 ? ' · exact' : ` · off by ${r.tbDiff}`,
+            anyPending ? ` · ${r.possible} max` : '',
+          ])),
       el('td', { class: 'pts' }, String(r.points)),
       el('td', { class: 'num' }, r.decided ? `${r.correct}–${r.decided - r.correct}` : '—'),
       anyPending ? el('td', { class: 'num hide-sm' }, String(r.possible)) : null,
-      el('td', { class: 'num hide-sm' }, r.tbGuess === null ? '—'
+      el('td', { class: 'num hide-sm' }, concealed ? '—'
+        : r.tbGuess === null ? '—'
         : r.tbDiff === null ? String(r.tbGuess)
         : r.tbDiff === 0 ? `${r.tbGuess} (exact)`
         : `${r.tbGuess} (off by ${r.tbDiff})`),
       el('td', { class: 'ts hide-sm' }, fmtStamp(r.updatedAt || r.submittedAt)));
-    tr.addEventListener('click', () => {
-      if (state.expanded.has(r.id)) state.expanded.delete(r.id);
-      else state.expanded.add(r.id);
-      render();
-    });
+    if (!concealed) {
+      tr.addEventListener('click', () => {
+        if (state.expanded.has(r.id)) state.expanded.delete(r.id);
+        else state.expanded.add(r.id);
+        render();
+      });
+    }
     tbody.append(tr);
 
     if (open) {
@@ -124,7 +136,22 @@ function renderBoard(rows, games, decided) {
     }
   }
   table.append(tbody);
-  host.replaceChildren(el('div', { class: 'table-wrap' }, table));
+  host.replaceChildren(el('div', { class: 'table-wrap' },
+    concealed ? concealNote(lock) : null,
+    table));
+}
+
+// Standing notice above the board while cards are still covered.
+function concealNote(lock) {
+  const when = lock.lockAt
+    ? new Date(lock.lockAt).toLocaleString(undefined, {
+      weekday: 'short', month: 'short', day: 'numeric',
+      hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+    })
+    : null;
+  return el('div', { class: 'concealed' },
+    el('b', {}, 'Picks stay hidden until the board locks.'),
+    when ? ` Every card opens at first kickoff — ${when}.` : ' Every card opens at first kickoff.');
 }
 
 function detailGrid(row, games) {

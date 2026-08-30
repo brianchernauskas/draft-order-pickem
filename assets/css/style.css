@@ -400,6 +400,13 @@ td.ts { color: var(--ink-faint); font-size: 12px; white-space: nowrap; }
 .dpick.push .w { color: var(--push); }
 .dpick img { width: 20px; height: 20px; object-fit: contain; flex: none; }
 
+/* Shown above the board while individual cards are still covered. */
+.concealed {
+  padding: 12px 16px; border-bottom: 1px solid var(--line);
+  font-size: 13px; color: var(--ink-dim); line-height: 1.5;
+}
+.concealed b { color: var(--ink); }
+
 .empty { text-align: center; padding: 60px 20px; color: var(--ink-faint); }
 .empty h3 { font-family: var(--font-cond); font-size: 22px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-dim); margin: 0 0 8px; }
 
