@@ -174,18 +174,23 @@ at 23:30 UTC and the Sunday nightcap finishes early on the 7th.
 
 **It is cheap despite running hourly.** The scores endpoint costs 2 credits a call, so the job
 reads Firestore first — which is free — and only reaches for the API when a game has actually
-kicked off more than three hours ago and is still missing a score. Runs with nothing to do make no
-API call at all, and once all ten finals are in every remaining run exits immediately. Expect
-roughly 20–30 paid calls across the weekend, not 120.
+kicked off more than two and a half hours ago and is still missing a score. Runs with nothing to
+do make no API call at all, and once all ten finals are in every remaining run exits immediately.
+Expect roughly 20–30 paid calls across the weekend, not 120.
 
 **It only fills blanks.** A score you typed on the admin page is never overwritten, so you always
 have the last word. Correcting a bad number by hand sticks.
 
 **It only writes finals.** A game still in progress reports `completed: false` and is skipped, so
-a half-time score can never land on the board.
+a half-time score can never land on the board. That guard is what makes the elapsed-time gate safe
+to loosen: an early look costs 2 credits and records nothing.
+
+**The gate is 2.5 hours, not 3, because the cron is best-effort.** GitHub has been firing this job
+roughly every two hours rather than hourly, so a 3-hour gate can miss a run by minutes and leave a
+final sitting for another two hours. See `MIN_ELAPSED_HOURS` in `tools/pull-scores.mjs`.
 
 Run it by hand from the Actions tab. *Dry run* prints what it would record without writing;
-*force* skips the three-hour gate and checks every unrecorded game immediately, at a cost of 2
+*force* skips the elapsed-time gate and checks every unrecorded game immediately, at a cost of 2
 credits.
 
 ## Quota budget

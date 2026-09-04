@@ -22,7 +22,13 @@ const ODDS_KEY = process.env.ODDS_API_KEY;
 
 // A college game runs about three and a half hours. Checking earlier than this
 // mostly buys `completed: false` at two credits a look.
-const MIN_ELAPSED_HOURS = 3;
+//
+// Held at 2.5 rather than 3 because the hourly cron is best-effort and has been
+// firing every two hours or so: a 3-hour gate let a game that kicked at 23:30
+// miss the 02:01 run by 29 minutes and wait for the next one. The looser gate
+// costs an occasional wasted look at a game still in the fourth quarter, and
+// nothing worse — only events the API reports as completed are ever written.
+const MIN_ELAPSED_HOURS = 2.5;
 
 function hasResult(settings, id) {
   const r = (settings.results || {})[id];
