@@ -380,6 +380,9 @@ td.who { font-weight: 600; }
 td.who .tiedflag { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--push); margin-left: 8px; }
 td.pts { font-family: var(--font-cond); font-size: 24px; color: var(--ink); width: 80px; }
 td.num { color: var(--ink-dim); white-space: nowrap; }
+/* Weight already burned on a decided game — the number that separates a player who
+   has not scored yet from one who just buried a 10 on the wrong side. */
+td.num.lost.burned { color: var(--bad); }
 td.ts { color: var(--ink-faint); font-size: 12px; white-space: nowrap; }
 
 .detail-row td { background: rgba(0,0,0,.25); padding: 0; }

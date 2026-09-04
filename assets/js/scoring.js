@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 // Pure scoring logic. No DOM, no network — shared by picks, standings, admin.
 // ---------------------------------------------------------------------------
-import { GAMES, TEAMS, TIEBREAKER_GAME_ID } from './config.js?v=202608301829';
+import { GAMES, TEAMS, TIEBREAKER_GAME_ID } from './config.js?v=202609040625';
 
 // Overlay admin-entered odds / kickoffs / venues onto the static schedule.
 export function mergedGames(settings = {}) {
@@ -88,6 +88,7 @@ export function scoreEntries(entries, games, settings = {}) {
     const weights = entry.weights || {};
     let points = 0;
     let live = 0;      // weight still in play on undecided games
+    let lost = 0;      // weight already burned on a decided game
     let correct = 0;
     let decided = 0;
     const detail = {};
@@ -103,13 +104,14 @@ export function scoreEntries(entries, games, settings = {}) {
       }
       decided += 1;
       if (res === 'push') {
-        if (pushCredits) points += w;
+        if (pushCredits) points += w; else lost += w;
         detail[g.id] = { pick, weight: w, status: 'push' };
       } else if (pick === res) {
         points += w;
         correct += 1;
         detail[g.id] = { pick, weight: w, status: 'hit' };
       } else {
+        lost += w;
         detail[g.id] = { pick, weight: w, status: 'miss' };
       }
     }
@@ -123,6 +125,13 @@ export function scoreEntries(entries, games, settings = {}) {
       ...entry,
       points,
       possible: points + live,
+      lost,
+      // Projected finish: banked points plus half the weight still in play. Ranking on
+      // points alone cannot separate "has not scored yet" from "just burned a 10", and
+      // ranking on the ceiling alone ignores what is already banked. This sits between
+      // the two, and collapses to `points` once live hits zero — so the finished board,
+      // and the draft order it sets, is exactly what it always was.
+      expected: points + live / 2,
       correct,
       decided,
       tbGuess,
@@ -132,18 +141,19 @@ export function scoreEntries(entries, games, settings = {}) {
   });
 
   rows.sort((x, y) => {
-    if (y.points !== x.points) return y.points - x.points;
+    if (y.expected !== x.expected) return y.expected - x.expected;
     const xd = x.tbDiff === null ? Infinity : x.tbDiff;
     const yd = y.tbDiff === null ? Infinity : y.tbDiff;
     if (xd !== yd) return xd - yd;
     return String(x.submittedAt || '').localeCompare(String(y.submittedAt || ''));
   });
 
-  // Draft order = rank. Ties only survive if points AND tiebreaker diff match.
+  // Draft order = rank. Ties only survive if the projected finish AND tiebreaker
+  // diff match; once every game is decided that projection is just the final score.
   let lastKey = null;
   let lastRank = 0;
   rows.forEach((r, i) => {
-    const key = `${r.points}|${r.tbDiff}`;
+    const key = `${r.expected}|${r.tbDiff}`;
     if (key === lastKey) {
       r.rank = lastRank;
       r.tied = true;

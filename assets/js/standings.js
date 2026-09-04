@@ -1,13 +1,13 @@
 // ---------------------------------------------------------------------------
 // Live standings / draft order.
 // ---------------------------------------------------------------------------
-import { TEAMS, TIEBREAKER_GAME_ID, MAX_SCORE, logoUrl } from './config.js?v=202608301829';
-import { initStore, watchEntries, watchSettings } from './store.js?v=202608301829';
+import { TEAMS, TIEBREAKER_GAME_ID, MAX_SCORE, logoUrl } from './config.js?v=202609040625';
+import { initStore, watchEntries, watchSettings } from './store.js?v=202609040625';
 import {
   mergedGames, spreadLabel, sideLine, gameResult, scoreEntries,
   tiebreakerActual, lockState, fmtTime, fmtDay,
-} from './scoring.js?v=202608301829';
-import { el, teamLogo, renderHeader, renderHonors, demoBanner, fmtStamp } from './ui.js?v=202608301829';
+} from './scoring.js?v=202609040625';
+import { el, teamLogo, renderHeader, renderHonors, demoBanner, fmtStamp } from './ui.js?v=202609040625';
 
 const state = { entries: [], settings: {}, expanded: new Set() };
 const $ = (id) => document.getElementById(id);
@@ -91,6 +91,7 @@ function renderBoard(rows, games, decided, lock) {
       el('th', {}, 'Player'),
       el('th', {}, 'Score'),
       el('th', {}, 'ATS'),
+      anyPending ? el('th', { class: 'lost' }, 'Lost') : null,
       anyPending ? el('th', { class: 'hide-sm' }, 'Max left') : null,
       el('th', { class: 'hide-sm' }, 'WIS/ND total'),
       el('th', { class: 'hide-sm' }, 'Submitted'))));
@@ -110,9 +111,12 @@ function renderBoard(rows, games, decided, lock) {
             r.tbGuess === null ? 'no tiebreaker' : `WIS/ND ${r.tbGuess}`,
             r.tbDiff === null ? '' : r.tbDiff === 0 ? ' · exact' : ` · off by ${r.tbDiff}`,
             anyPending ? ` · ${r.possible} max` : '',
+            anyPending && r.lost ? ` · ${r.lost} lost` : '',
           ])),
       el('td', { class: 'pts' }, String(r.points)),
       el('td', { class: 'num' }, r.decided ? `${r.correct}–${r.decided - r.correct}` : '—'),
+      anyPending ? el('td', { class: `num lost${r.lost ? ' burned' : ''}` },
+        r.decided ? String(r.lost) : '—') : null,
       anyPending ? el('td', { class: 'num hide-sm' }, String(r.possible)) : null,
       el('td', { class: 'num hide-sm' }, concealed ? '—'
         : r.tbGuess === null ? '—'
@@ -130,7 +134,7 @@ function renderBoard(rows, games, decided, lock) {
     tbody.append(tr);
 
     if (open) {
-      const cols = anyPending ? 7 : 6;
+      const cols = anyPending ? 8 : 6;
       tbody.append(el('tr', { class: 'detail-row' },
         el('td', { colspan: String(cols) }, detailGrid(r, games))));
     }
