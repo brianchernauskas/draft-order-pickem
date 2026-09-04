@@ -172,11 +172,11 @@ A second Action records finals as games end, which scores the board with no manu
 **Schedule:** hourly across 3–7 September UTC. The window is UTC because the Thursday opener kicks
 at 23:30 UTC and the Sunday nightcap finishes early on the 7th.
 
-**It is cheap despite running hourly.** The scores endpoint costs 2 credits a call, so the job
-reads Firestore first — which is free — and only reaches for the API when a game has actually
-kicked off more than two and a half hours ago and is still missing a score. Runs with nothing to
-do make no API call at all, and once all ten finals are in every remaining run exits immediately.
-Expect roughly 20–30 paid calls across the weekend, not 120.
+**It is cheap despite running every 15 minutes.** The scores endpoint costs 2 credits a call, so
+the job reads Firestore first — which is free — and only reaches for the API when a game has
+actually kicked off more than two and a half hours ago and is still missing a score. Runs with
+nothing to do make no API call at all, and once all ten finals are in every remaining run exits
+immediately. Expect roughly 40 paid calls — about 80 credits — across a full weekend.
 
 **It only fills blanks.** A score you typed on the admin page is never overwritten, so you always
 have the last word. Correcting a bad number by hand sticks.
@@ -185,9 +185,19 @@ have the last word. Correcting a bad number by hand sticks.
 a half-time score can never land on the board. That guard is what makes the elapsed-time gate safe
 to loosen: an early look costs 2 credits and records nothing.
 
-**The gate is 2.5 hours, not 3, because the cron is best-effort.** GitHub has been firing this job
-roughly every two hours rather than hourly, so a 3-hour gate can miss a run by minutes and leave a
-final sitting for another two hours. See `MIN_ELAPSED_HOURS` in `tools/pull-scores.mjs`.
+**The gate is 2.5 hours, not 3, because a game can end early.** A blowout is done well before the
+3.5 hours a college game usually takes, and the gate is what decides how soon the job is willing to
+look. See `MIN_ELAPSED_HOURS` in `tools/pull-scores.mjs`.
+
+**The schedule is every 15 minutes, and that is not paranoia.** GitHub's scheduler is best-effort:
+across Thursday it deferred this job by two to five hours against an hourly cron, so the opener's
+final sat off the board long after the game ended. Density does not make one firing more reliable,
+it just shortens the wait for the next chance.
+
+**Cadence is the only cost lever.** A run outside a game's finishing window exits before touching
+the API, so restricting the schedule to game hours would save nothing — the paid runs all fall in
+the window between the gate opening and the API marking a game complete. Expect roughly 80 credits
+for a full weekend at `*/15`, or about 50 at `*/30`.
 
 Run it by hand from the Actions tab. *Dry run* prints what it would record without writing;
 *force* skips the elapsed-time gate and checks every unrecorded game immediately, at a cost of 2

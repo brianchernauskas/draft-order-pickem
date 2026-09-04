@@ -1,15 +1,24 @@
 name: Pull final scores
 
-# Hourly across the Week 1 window, 3-7 September UTC. The Thursday opener kicks
-# at 23:30 UTC on the 3rd and the Sunday nightcap finishes early on the 7th, so
-# the window is expressed in UTC rather than local dates.
+# Every 15 minutes across the Week 1 window, 3-7 September UTC. The Thursday
+# opener kicks at 23:30 UTC on the 3rd and the Sunday nightcap finishes early on
+# the 7th, so the window is expressed in UTC rather than local dates.
 #
-# Most of these runs cost nothing: the job reads Firestore first and only calls
-# the Odds API when a game has kicked off and is still missing a score. Once all
-# ten are recorded every remaining run exits immediately.
+# It was hourly, which in practice it never was: GitHub treats schedules as
+# best-effort and deferred this job by two to five hours all through Thursday,
+# leaving the opener's final off the board for hours after it ended. A denser
+# schedule does not make any single firing more reliable -- it just means the
+# next chance is 15 minutes away instead of two hours.
+#
+# Most of these runs still cost nothing. The job reads Firestore first and only
+# calls the Odds API when a game is past the elapsed gate and still missing a
+# score, so every run outside a game's finishing window exits free -- which is
+# why the cadence, not the window, is the only real cost lever. Budget is about
+# 80 credits for the weekend against a 500/month free tier; halve it by moving
+# to '*/30' if quota gets tight.
 on:
   schedule:
-    - cron: '0 * 3-7 9 *'
+    - cron: '*/15 * 3-7 9 *'
   workflow_dispatch:
     inputs:
       dry_run:
