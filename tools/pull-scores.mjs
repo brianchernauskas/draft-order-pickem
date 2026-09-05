@@ -112,13 +112,20 @@ async function main() {
     const event = events.find((ev) => eventMatches(ev, game));
     const label = `${TEAMS[game.teamA].name} / ${TEAMS[game.teamB].name}`;
     const final = finalFor(event, game);
-    if (final) found.push({ game, final, label });
-    else notYet.push(label);
+    if (final) { found.push({ game, final, label }); continue; }
+    // Separate the two ways a game can come back empty. They look identical on the
+    // board but need opposite responses: a game the feed is simply still playing
+    // resolves itself on a later run, while one missing from the feed never will
+    // and wants a hand-entered score. Worth the extra line the first time a final
+    // sits unrecorded for hours and you have to guess which you are looking at.
+    notYet.push(event
+      ? `${label} — in the feed, not final (completed: ${JSON.stringify(event.completed)})`
+      : `${label} — NOT IN FEED: no event matched this pairing in the Week 1 window`);
   }
 
   found.forEach(({ label, final, game }) => console.log(
     `  FINAL ${label}: ${TEAMS[game.teamA].abbr} ${final.a} - ${TEAMS[game.teamB].abbr} ${final.b}`));
-  notYet.forEach((label) => console.log(`  still in progress or unreported: ${label}`));
+  notYet.forEach((label) => console.log(`  ${label}`));
 
   if (!found.length) {
     console.log('\nNothing final yet. Nothing written.');
