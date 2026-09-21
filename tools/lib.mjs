@@ -87,6 +87,11 @@ export function modal(values) {
 const BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}`
   + '/databases/(default)/documents/config/settings';
 
+// The API key is restricted to requests from the Pages site, so server-side
+// jobs have to say where they're from. (Referer is spoofable, which is fine:
+// the restriction stops casual reuse of the key, it isn't authentication.)
+const ORIGIN = { Referer: 'https://brianchernauskas.github.io/draft-order-pickem/' };
+
 export function toFs(value) {
   if (value === null || value === undefined) return { nullValue: null };
   if (typeof value === 'boolean') return { booleanValue: value };
@@ -119,7 +124,7 @@ export function fromFs(value) {
 }
 
 export async function readSettings() {
-  const res = await fetch(`${BASE}?key=${FIREBASE_CONFIG.apiKey}`);
+  const res = await fetch(`${BASE}?key=${FIREBASE_CONFIG.apiKey}`, { headers: ORIGIN });
   if (res.status === 404) return {};
   if (!res.ok) throw new Error(`Firestore read failed ${res.status}: ${(await res.text()).slice(0, 300)}`);
   const doc = await res.json();
@@ -133,7 +138,7 @@ export async function writeSettings(settings) {
   for (const [k, v] of Object.entries(settings)) fields[k] = toFs(v);
   const res = await fetch(`${BASE}?key=${FIREBASE_CONFIG.apiKey}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...ORIGIN },
     body: JSON.stringify({ fields }),
   });
   if (!res.ok) throw new Error(`Firestore write failed ${res.status}: ${(await res.text()).slice(0, 300)}`);
