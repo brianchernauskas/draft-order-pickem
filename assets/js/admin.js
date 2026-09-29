@@ -35,7 +35,8 @@ if (sessionStorage.getItem(SESSION_KEY) === '1') start();
 
 async function start() {
   $('gate').hidden = true;
-  $('app').hidden = false;
+  $('app').inert = false;
+  $('app').classList.remove('veiled');
   await initStore();
   renderHeader('admin');
 
